@@ -3,6 +3,6 @@ packages:
 - '.'
 extra-deps:
 - megaparsec-6.4.0
-- mmark-0.0.4.1
+- mmark-0.0.4.2
 - modern-uri-0.1.2.1
 - parser-combinators-0.4.0
