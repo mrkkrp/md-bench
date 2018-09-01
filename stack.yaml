@@ -1,8 +1,13 @@
-resolver: lts-10.0
+resolver: lts-12.9
 packages:
 - '.'
 extra-deps:
-- megaparsec-6.4.0
-- mmark-0.0.4.3
-- modern-uri-0.1.2.1
-- parser-combinators-0.4.0
+- cmark-0.5.6
+- markdown-0.1.17.1
+- megaparsec-7.0.1
+- mmark-0.0.6.0
+- modern-uri-0.3.0.0
+
+nix:
+  packages:
+    - zlib
