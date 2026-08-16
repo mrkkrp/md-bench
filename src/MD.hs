@@ -1,27 +1,37 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
+-- | Turning a markdown document into HTML with each of the libraries under
+-- comparison. Every function does the same amount of work: parse the
+-- document and render it to HTML as lazy text.
 module MD
-  ( mmarkTest
-  , pandocTest
-  , cmarkTest
-  , markdownTest
-  , cheapskateTest )
+  ( mmarkTest,
+    commonmarkTest,
+    pandocTest,
+    cmarkTest,
+  )
 where
 
 import CMark
+import Commonmark qualified as CM
 import Data.Text (Text)
+import Data.Text.Lazy qualified as TL
 import Lucid (renderText)
-import Text.Blaze.Html (toHtml)
 import Text.Blaze.Html.Renderer.Text
-import Text.Markdown
+import Text.MMark qualified as MMark
 import Text.Pandoc
-import qualified Cheapskate     as C
-import qualified Data.Text.Lazy as TL
-import qualified Text.MMark     as MMark
 
 mmarkTest :: Text -> TL.Text
 mmarkTest txt =
   case MMark.parse "" txt of
-    Left  _ -> error "fucked up"
-    Right x -> renderText (MMark.render x)
+    Left _ -> error "mmark failed to parse the input"
+    Right x -> renderText (MMark.render mempty x)
+
+commonmarkTest :: Text -> TL.Text
+commonmarkTest txt =
+  case CM.commonmark "" txt of
+    Left _ -> error "commonmark failed to parse the input"
+    Right (html :: CM.Html ()) -> CM.renderHtml html
 
 pandocTest :: Text -> TL.Text
 pandocTest txt = fromRight . runPure $ do
@@ -31,12 +41,6 @@ pandocTest txt = fromRight . runPure $ do
 cmarkTest :: Text -> Text
 cmarkTest = commonmarkToHtml []
 
-markdownTest :: Text -> TL.Text
-markdownTest = renderHtml . markdown def . TL.fromStrict
-
-cheapskateTest :: Text -> TL.Text
-cheapskateTest = renderHtml . toHtml . C.markdown def
-
 fromRight :: Either a b -> b
-fromRight (Left _) = error "fucked up"
+fromRight (Left _) = error "pandoc failed to parse the input"
 fromRight (Right x) = x
